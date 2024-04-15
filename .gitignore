@@ -1,4 +1,12 @@
-.vscode
-**/*.rs.bk
-Cargo.lock
-target/
+# cargo
+/Cargo.lock
+/target/
+
+# makefile
+/image
+/mnt/
+/sysroot.tar.gz
+/version.mk
+
+# cross
+/qemu-arm

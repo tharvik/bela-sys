@@ -1,9 +1,5 @@
 //! Very basic program to test MIDI bindings of the Bela
 
-extern crate bela_sys;
-extern crate libc;
-extern crate nix;
-
 use bela_sys::midi::*;
 use bela_sys::{BelaContext, BelaInitSettings};
 use nix::sys::signal;

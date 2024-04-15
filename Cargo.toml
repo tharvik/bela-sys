@@ -1,25 +1,25 @@
 [package]
 name = "bela-sys"
-version = "0.1.0"
-authors = ["Andrew C. Smith <andrewchristophersmith@gmail.com>"]
+version = "0.3.8-h"
+authors = ["tharvik"]
 links = "bela"
+edition = "2021"
 
 [build-dependencies]
-bindgen = "0.63"
-cc = { version = "1.0", optional = true }
-doxygen-rs = { git = "https://github.com/Techie-Pi/doxygen-rs.git", rev = "a7fee318dba1939bcd6f22a7a43de1b072552d87" }
+cc = { version = "1", optional = true }
 
 [dev-dependencies]
 libc = "0.2"
-nix = "0.25"
+nix = { version = "0.28", features = ["signal"] }
 
 [features]
 static = []
-midi = [ "cc" ]
+midi = []
+trill = ["dep:cc"]
 
 [[example]]
 name = "hello"
 
 [[example]]
 name = "midi"
-required-features = [ "midi" ]
+required-features = ["midi"]

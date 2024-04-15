@@ -1,24 +1,8 @@
 //! Very basic program to test bindings of the Bela
-//!
-//! This assumes you've built libbela.so and that it's saved on your Bela in
-//! the directory `/root/Bela/lib`.
-//!
-//! ```bash
-//! cargo build --release --target=armv7-unknown-linux-gnueabihf --examples
-//! scp target/armv7-unknown-linux-gnueabihf/release/examples/hello root@bela.local:/root/hello
-//! ssh root@bela.local "LD_LIBRARY_PATH=/root/Bela/lib /root/hello"
-//! ```
-//!
-
-extern crate bela_sys;
-extern crate libc;
-extern crate nix;
 
 use bela_sys::{BelaContext, BelaInitSettings};
 use nix::sys::signal;
 use std::{mem, ptr, slice, thread, time};
-
-static mut FRAME_INDEX: usize = 0;
 
 extern "C" fn render(context: *mut BelaContext, _user_data: *mut std::os::raw::c_void) {
     let context = unsafe { &mut *context };
@@ -28,14 +12,12 @@ extern "C" fn render(context: *mut BelaContext, _user_data: *mut std::os::raw::c
     let audio_out: &mut [f32] =
         unsafe { slice::from_raw_parts_mut(context.audioOut, (n_frames * n_channels) as usize) };
 
-    let frame_index = unsafe { &mut FRAME_INDEX };
+    let frame_index = context.audioFramesElapsed;
 
     let len = audio_out.len();
     for (idx, samp) in audio_out.iter_mut().enumerate() {
-        *samp = (idx as f32 / len as f32) * (*frame_index % 5) as f32;
+        *samp = (idx as f32 / len as f32) * (frame_index % 5) as f32;
     }
-
-    *frame_index += 1;
 }
 
 extern "C" fn signal_handler(_signal: std::os::raw::c_int) {

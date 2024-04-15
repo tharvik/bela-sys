@@ -1,27 +1,52 @@
 # bela-sys
 
-C API bindings for the Bela musical interface microprocessor.
+C & C++ API bindings for
+the [Bela musical interface microprocessor](https://bela.io/).
 
-## Setup and Linking
+## Environment
 
-This project requires numerous includes and libraries from Bela.
-Therefore, to cross-compile you must extract the root partition of [a Bela image](https://github.com/BelaPlatform/bela-image-builder/releases/) to a location of your choice and set the environment variable `BELA_SYSROOT` to point to that directory.
+The [stable Bela](https://github.com/BelaPlatform/bela-image-builder) is running
+a [very old version of Debian](https://www.debian.org/releases/stretch/),
+which makes it difficult to have a correct development environment:
 
-## Testing
+- you probably don't run an ARMv7-A toolchain on a Xenomai kernel
+- modern `bindgen` is not running on Bela because it needs clang >= 6
+- theses old libc and friends are very likely to not exist on your system
+- [libbela](https://github.com/BelaPlatform/Bela)
+  isn't buildable outside of the board
 
-I'd love to hear from anyone who has the time and expertise to test this out.
-Please check out the doc comment in [`examples/hello.rs`](/andrewcsmith/bela-sys/tree/master/examples/hello.rs) and see if that works for you.
+That being said, your project only needs to link to the actual library,
+not to generate the bindings. It is thus a separate and optional process.
 
-This assumes you've built `libbela.so` and that it's saved on your Bela in the directory `/root/Bela/lib`.
+### Build
 
-```bash
-cargo build --release --target=armv7-unknown-linux-gnueabihf --examples
-scp target/armv7-unknown-linux-gnueabihf/release/examples/hello root@bela.local:/root/hello
-ssh root@bela.local "LD_LIBRARY_PATH=/root/Bela/lib /root/hello"
+As no cross image was made for Bela, one need to build it.
+To do that, you'll need
+
+- [QEMU User space emulator](https://qemu.eu/doc/latest/user/main.html)
+  for ARMv7-A
+- [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc)
+  setup to run ARMv7-A with `/usr/bin/qemu-arm`
+  - if that's not your path, change it in
+    the [Makefile](Makefile) and [Dockerfile](Dockerfile)
+- [cross](https://github.com/cross-rs/cross) for Cargo integration
+
+The [Makefile](Makefile) takes care of having creating a tar of the image.
+The rest is achieved via `cross`.
+
+```sh
+$ make image # get Bela image based on cargo's version
+# make sysroot.tar.gz # mount image and tar it (requires root)
+$ make qemu-arm # copy the qemu user emulator
+$ cross build --example hello # build whatever you want
 ```
 
-## Disclaimer
+## Generate bindings
 
-This is nowhere near ready.
-Just a little bit of bindgen and some proof-of-concept stuff.
-There are problems.
+If you want to build your own bindings
+
+```sh
+$ make image # get Bela image based on cargo's version
+# make mount # mount image (requires root)
+$ make build # generate bindings from mounted image
+```
