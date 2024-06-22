@@ -1,0 +1,23 @@
+name: build, lint and test
+
+on:
+  push:
+
+jobs:
+  build-lint-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env: 
+      CARGO_TERM_COLOR: always
+    steps:
+      - name: install binfmt
+        run: |
+          sudo apt update
+          sudo apt install binfmt-support qemu-user-static
+      - uses: actions/checkout@v4
+      - run: make image qemu-arm
+      - run: sudo make sysroot.tar.gz
+      - run: cross build --verbose
+      - run: cross check --verbose
+      - run: cross test --verbose
