@@ -15,6 +15,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install binfmt-support qemu-user-static
+      - run: sudo update-binfmts --display
       - uses: actions/checkout@v4
       - run: make image qemu-arm
       - run: sudo make sysroot.tar.gz
