@@ -17,7 +17,9 @@ jobs:
       - run: make image
       - run: sudo make sysroot.tar.gz
 
-      - uses: docker/setup-qemu-action@v3.0.0
+      - name: setup qemu-binfmt
+        uses: docker/setup-qemu-action@v3.0.0
+
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -31,7 +33,6 @@ jobs:
         id: build
         with:
           context: .
-          platforms: linux/arm/v7
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
