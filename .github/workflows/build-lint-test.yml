@@ -30,10 +30,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: devcontainers/ci@v0.3
+      - uses: docker/build-push-action@v6
         with:
-          imageName: ghcr.io/${{ github.repository }}-cross
-          platform: linux/arm/v7
+          platforms: linux/arm/v7
+          push: true
+          tags: ghcr.io/${{ github.repository }}-cross
+
 
   build-lint-test:
     needs: [publish-github-container]
