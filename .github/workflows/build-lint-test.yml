@@ -21,7 +21,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install qemu-user-static
-          sudo ln /usr/bin/qemu-arm-static /usr/bin/qemu-arm
+          for f in /usr/bin/qemu-*-static; do ln $f `echo $f | sed s,-static,,`; done
       - name: setup binfmt
         run: |
           docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-*
