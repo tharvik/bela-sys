@@ -54,6 +54,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/arm/v7
+          allow: security.insecure
 
   build-lint-test:
     needs: [publish-github-container]
