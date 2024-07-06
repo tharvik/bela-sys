@@ -41,7 +41,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}-cross
 
-      - run: update-binfmts --install qemu-arm /usr/bin/qemu-arm --magic 7f454c4601010100000000000000000002002800 --mask ffffffffffffff00fffffffffffffffffeffffff
+      - run: sudo update-binfmts --install qemu-arm /usr/bin/qemu-arm --magic 7f454c4601010100000000000000000002002800 --mask ffffffffffffff00fffffffffffffffffeffffff
       - run: ls /proc/sys/fs/binfmt_misc/
       - run: cat /proc/sys/fs/binfmt_misc/qemu-arm
       - run: ldd /usr/bin/qemu-arm || true
