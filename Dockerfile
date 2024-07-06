@@ -1,4 +1,4 @@
-FROM multiarch/qemu-user-static:arm AS emulators
+FROM tonistiigi/binfmt AS emulators
 
 FROM --platform=linux/arm/v7 scratch AS bela
 
