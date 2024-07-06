@@ -18,7 +18,9 @@ jobs:
       - run: sudo make sysroot.tar.gz
 
       - name: setup qemu-binfmt
-        uses: docker/setup-qemu-action@v3.0.0
+        uses: docker/setup-qemu-action@v3
+      - run: ls /proc/sys/fs/binfmt_misc/
+      - run: cat /proc/sys/fs/binfmt_misc/qemu-arm
 
       - uses: docker/login-action@v3
         with:
