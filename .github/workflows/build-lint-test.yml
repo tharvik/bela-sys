@@ -20,11 +20,12 @@ jobs:
       - name: install qemu-user
         run: |
           sudo apt update
-          sudo apt install qemu-user-static binfmt-support
+          sudo apt install qemu-user-static
           sudo ln /usr/bin/qemu-arm-static /usr/bin/qemu-arm
-          sudo update-binfmts --display
+      - name: remove default binfmt
+        run: |
+          sudo apt install binfmt-support
           sudo update-binfmts --unimport
-          sudo update-binfmts --display
       - name: setup qemu-binfmt
         uses: docker/setup-qemu-action@v3
 
@@ -42,7 +43,9 @@ jobs:
 
       - run: ls /proc/sys/fs/binfmt_misc/
       - run: cat /proc/sys/fs/binfmt_misc/qemu-arm
+      - run: ldd /usr/bin/qemu-arm || :
       - run: /usr/bin/qemu-arm --help
+      - run: sudo update-binfmts --display
       - run: docker buildx build .
 
       - uses: docker/build-push-action@v6
