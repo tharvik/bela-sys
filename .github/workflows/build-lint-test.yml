@@ -43,7 +43,7 @@ jobs:
 
       - run: ls /proc/sys/fs/binfmt_misc/
       - run: cat /proc/sys/fs/binfmt_misc/qemu-arm
-      - run: ldd /usr/bin/qemu-arm || :
+      - run: ldd /usr/bin/qemu-arm || true
       - run: /usr/bin/qemu-arm --help
       - run: sudo update-binfmts --display
       - run: docker buildx build .
