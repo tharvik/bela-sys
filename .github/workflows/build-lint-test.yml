@@ -4,53 +4,36 @@ on:
   push:
 
 jobs:
+#  extract-bela-sysroot:
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: read
+#    outputs:
+#      digest: ${{ steps.build.outputs.digest }}
+#    steps:
+#      - uses: actions/checkout@v4
+#      - run: make image
+#      - run: sudo make sysroot.tar.gz
+
   publish-github-container:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    outputs:
-      digest: ${{ steps.build.outputs.digest }}
     steps:
-      - uses: actions/checkout@v4
-
-      - run: make image
-      - run: sudo make sysroot.tar.gz
-
-      - name: install qemu-user
-        run: |
-          sudo apt update
-          sudo apt install qemu-user-static
-          for f in /usr/bin/qemu-*-static; do sudo ln $f `echo $f | sed s,-static,,`; done
-      - name: setup binfmt
-        run: |
-          docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-*
-          docker run --privileged --rm tonistiigi/binfmt --install all
-
+      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
-
+        with:
+          use: true
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/metadata-action@v5
-        id: meta
+      - uses: devcontainers/ci@v0.3
         with:
-          images: ghcr.io/${{ github.repository }}-cross
-
-      - run: ls /proc/sys/fs/binfmt_misc/
-      - run: cat /proc/sys/fs/binfmt_misc/qemu-arm
-      - run: ldd /usr/bin/qemu-arm-static || true
-
-      - uses: docker/build-push-action@v6
-        id: build
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          allow: security.insecure
+          imageName: ghcr.io/${{ github.repository }}-cross
+          platform: linux/arm/v7
 
   build-lint-test:
     needs: [publish-github-container]
@@ -63,9 +46,9 @@ jobs:
       - name: setup qemu-binfmt
         run: docker run --rm --privileged multiarch/qemu-user-static --reset
 
-      - run: echo "${{ toJSON(needs.publish-github-container.outputs) }}"
-      - name: use built container
-        run: sed -i 's/^image = .*$/image = "${{ needs.publish-github-container.outputs.imageid }}"/' Cross.toml
+          #- run: echo "${{ toJSON(needs.publish-github-container.outputs) }}"
+          #- name: use built container
+          #run: sed -i 's/^image = .*$/image = "${{ needs.publish-github-container.outputs.imageid }}"/' Cross.toml
 
       - run: cargo install cross
       - run: cross build --verbose
