@@ -44,7 +44,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}-cross
 
       - run: ls /proc/sys/fs/binfmt_misc/
-      - run: cat /proc/sys/fs/binfmt_misc/qemu-arm-static
+      - run: cat /proc/sys/fs/binfmt_misc/qemu-arm
       - run: ldd /usr/bin/qemu-arm-static || true
 
       - uses: docker/build-push-action@v6
