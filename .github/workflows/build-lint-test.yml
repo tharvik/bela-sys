@@ -30,6 +30,9 @@ jobs:
         uses: docker/setup-qemu-action@v3
 
       - uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm/v7
+          install: true
 
       - uses: docker/login-action@v3
         with:
@@ -41,12 +44,9 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}-cross
 
-      - run: sudo update-binfmts --install qemu-arm /usr/bin/qemu-arm --magic 7f454c4601010100000000000000000002002800 --mask ffffffffffffff00fffffffffffffffffeffffff
       - run: ls /proc/sys/fs/binfmt_misc/
       - run: cat /proc/sys/fs/binfmt_misc/qemu-arm
       - run: ldd /usr/bin/qemu-arm || true
-      - run: /usr/bin/qemu-arm --help
-      - run: sudo update-binfmts --display
 
       - uses: docker/build-push-action@v6
         id: build
