@@ -4,21 +4,51 @@ on:
   push:
 
 jobs:
-  build-lint-test:
+  publish-github-container:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    env: 
+      packages: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: make image
+      - run: sudo make sysroot.tar.gz
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ghcr.io/${{ github.repository }}-cross
+      - uses: docker/build-push-action@v5
+        id: build
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-lint-test:
+    needs: [publish-github-container]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
       CARGO_TERM_COLOR: always
     steps:
-      - name: install binfmt
-        run: |
-          sudo apt update
-          sudo apt install binfmt-support qemu-user-static
-      - run: sudo update-binfmts --display
-      - uses: actions/checkout@v4
-      - run: make image qemu-arm
-      - run: sudo make sysroot.tar.gz
+      - name: setup qemu-binfmt
+        run: docker run --rm --privileged multiarch/qemu-user-static --reset
+
+      - run: echo "${{ toJSON(needs.publish-github-container.outputs) }}"
+      - name: use built container
+        run: sed -i 's/^image = .*$/image = "${{ needs.publish-github-container.outputs.imageid }}"/' Cross.toml
+
       - run: cargo install cross
       - run: cross build --verbose
       - run: cross check --verbose

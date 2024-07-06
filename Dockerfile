@@ -1,10 +1,9 @@
-FROM --platform=linux/arm/v7 scratch
+FROM multiarch/qemu-user-static:arm AS emulators
+
+FROM --platform=linux/arm/v7 scratch AS bela
 
 ADD sysroot.tar.gz /
-ADD qemu-arm /usr/bin/qemu-arm
-# ubuntu compat
-ADD qemu-arm /usr/libexec/qemu-binfmt/arm-binfmt-P
-ADD qemu-arm /usr/libexec/qemu-binfmt/armeb-binfmt-P
+COPY --from=emulators /usr/bin/qemu-arm-static /usr/bin/
 
 ENV RUSTUP_HOME=/opt/rustup CARGO_HOME=/opt/cargo
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \

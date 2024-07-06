@@ -37,7 +37,6 @@ The rest is achieved via `cross`.
 ```sh
 $ make image # get Bela image based on cargo's version
 # make sysroot.tar.gz # mount image and tar it (requires root)
-$ make qemu-arm # copy the qemu user emulator
 $ cross build --example hello # build whatever you want
 ```
 

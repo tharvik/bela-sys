@@ -1,3 +1,5 @@
 [build]
 default-target = "armv7-unknown-linux-gnueabihf"
-dockerfile = "Dockerfile"
+
+[target.armv7-unknown-linux-gnueabihf]
+image = "ghcr.io/tharvik/bela-sys-cross:latest"

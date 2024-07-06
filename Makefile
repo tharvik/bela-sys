@@ -16,13 +16,10 @@ mount: image | mnt/
 		mnt
 
 .PHONY: prepare-cross
-prepare-cross: sysroot.tar.gz qemu-arm
+prepare-cross: sysroot.tar.gz
 
 sysroot.tar.gz: | mount
 	tar --create --file $@ --auto-compress --directory mnt .
-qemu-arm:
-	cp /usr/bin/qemu-arm-static $@ || \
-	cp /usr/bin/qemu-arm $@
 
 .PHONY: build
 
