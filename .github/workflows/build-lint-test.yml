@@ -17,6 +17,10 @@ jobs:
       - run: make image
       - run: sudo make sysroot.tar.gz
 
+      - name: install qemu-user
+        run: |
+          apt update
+          apt install qemu-user
       - name: setup qemu-binfmt
         uses: docker/setup-qemu-action@v3
 
