@@ -30,8 +30,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v4
+      - run: make image
+      - run: sudo make sysroot.tar.gz
+
       - uses: docker/build-push-action@v6
         with:
+          context: .
           platforms: linux/arm/v7
           push: true
           tags: ghcr.io/${{ github.repository }}-cross
