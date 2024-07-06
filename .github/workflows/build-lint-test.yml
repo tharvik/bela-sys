@@ -34,9 +34,9 @@ jobs:
 
       - run: ls /proc/sys/fs/binfmt_misc/
       - run: cat /proc/sys/fs/binfmt_misc/qemu-arm
-      - run: docker buildx build --load --tag bela-cross:latest .
+      - run: docker buildx build .
 
-      - uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v6
         id: build
         with:
           context: .
