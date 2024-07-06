@@ -47,7 +47,6 @@ jobs:
       - run: ldd /usr/bin/qemu-arm || true
       - run: /usr/bin/qemu-arm --help
       - run: sudo update-binfmts --display
-      - run: docker buildx build .
 
       - uses: docker/build-push-action@v6
         id: build
