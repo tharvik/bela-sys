@@ -34,6 +34,7 @@ jobs:
 
       - run: ls /proc/sys/fs/binfmt_misc/
       - run: cat /proc/sys/fs/binfmt_misc/qemu-arm
+      - run: /usr/bin/qemu-arm
       - run: docker buildx build .
 
       - uses: docker/build-push-action@v6
