@@ -21,12 +21,11 @@ jobs:
         run: |
           sudo apt update
           sudo apt install qemu-user-static
-      - name: remove default binfmt
+          sudo ln /usr/bin/qemu-user-static /usr/bin/qemu-user
+      - name: setup binfmt
         run: |
-          sudo apt install binfmt-support
-          sudo update-binfmts --unimport
-      - name: setup qemu-binfmt
-        run: docker run --rm --privileged multiarch/qemu-user-static --reset
+          docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-*
+          docker run --privileged --rm tonistiigi/binfmt --install all
 
       - uses: docker/setup-buildx-action@v3
         with:
@@ -54,7 +53,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/arm/v7
           allow: security.insecure
 
   build-lint-test:
