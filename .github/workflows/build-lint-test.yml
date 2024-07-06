@@ -21,7 +21,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install qemu-user-static
-          sudo ln /usr/bin/qemu-user-static /usr/bin/qemu-user
+          sudo ln /usr/bin/qemu-arm-static /usr/bin/qemu-arm
       - name: setup binfmt
         run: |
           docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-*
@@ -53,6 +53,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/arm/v7
           allow: security.insecure
 
   build-lint-test:
