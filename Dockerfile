@@ -1,10 +1,24 @@
-FROM --platform=linux/arm/v7 scratch
+FROM --platform=$BUILDPLATFORM tonistiigi/xx AS xx
 
+FROM --platform=$BUILDPLATFORM alpine AS builder
+COPY --from=xx / /
+ARG TARGETPLATFORM
+
+RUN apk add clang
+RUN xx-apk add gcc musl-dev
+
+RUN echo 'int main() { return 0; }' > main.c
+RUN xx-clang --static -o binary main.c && \
+    xx-verify --static binary
+
+#RUN file binary; false
+
+# --
+
+FROM --platform=linux/arm/v7 scratch AS bela
 ADD sysroot.tar.gz /
+RUN ["/bin/true"]
 
-RUN ["/bin/ls"]
-
-ENV RUSTUP_HOME=/opt/rustup CARGO_HOME=/opt/cargo
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
-	sh -s -- -y --no-modify-path --profile minimal 
-ENV PATH=${PATH}:${CARGO_HOME}/bin
+#FROM --platform=linux/arm/v7 scratch AS runner
+#COPY --from=builder binary /binary
+#RUN ["/binary"]
