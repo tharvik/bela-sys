@@ -15,10 +15,10 @@ RUN xx-clang --static -o binary main.c && \
 
 # --
 
-FROM --platform=linux/arm/v7 scratch AS bela
-ADD sysroot.tar.gz /
-RUN ["/bin/true"]
+#FROM --platform=linux/arm/v7 scratch AS bela
+#ADD sysroot.tar.gz /
+#RUN ["/bin/true"]
 
-#FROM --platform=linux/arm/v7 scratch AS runner
-#COPY --from=builder binary /binary
-#RUN ["/binary"]
+FROM --platform=linux/arm/v7 scratch AS runner
+COPY --from=builder binary /binary
+RUN ["/binary"]

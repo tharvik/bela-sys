@@ -39,7 +39,6 @@ jobs:
         with:
           context: .
           platforms: linux/arm
-          push: true
           tags: ghcr.io/${{ github.repository }}-cross
 
 
